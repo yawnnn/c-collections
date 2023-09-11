@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "xmemory": "c",
+        "initializer_list": "c",
+        "type_traits": "c",
+        "vector": "c",
+        "xutility": "c",
+        "stdlib.h": "c"
+    }
+}

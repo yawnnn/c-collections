@@ -16,6 +16,7 @@ void vec_new(Vec *v, unsigned int size);
 void vec_drop(Vec *v);
 void vec_new_with(Vec *v, unsigned int cap, unsigned int size);
 void vec_init(Vec *v, unsigned int len, unsigned int size);
+void vec_from(Vec *v, void *arr, unsigned int len, unsigned int size);
 void vec_resize(Vec *v, unsigned int min);
 void vec_push(Vec *v, void *elem);
 void vec_push_n(Vec *v, void *elems, unsigned int n);

@@ -1,7 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
 #include "vector.h"
 
 #if __DBG__
@@ -10,16 +6,8 @@
 #define __VEC_DEBUG_MODE 0
 #endif
 
-#define CRED     "\x1b[31m"
-#define CGREEN   "\x1b[32m"
-#define CYELLOW  "\x1b[33m"
-#define CBLUE    "\x1b[34m"
-#define CMAGENTA "\x1b[35m"
-#define CCYAN    "\x1b[36m"
-#define CRESET   "\x1b[0m"
-
-const char max_depth_tabs[20] = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
-short int __dbg_depth = 0;
+static const char max_depth_tabs[20] = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+static short int __dbg_depth = 0;
 
 #define __DBG_PRINT_BEFORE(v)                                   \
 if (__VEC_DEBUG_MODE) {                                         \
@@ -131,6 +119,12 @@ void vec_init(Vec *v, unsigned int len, unsigned int size)
     vec_new_with(v, len, size);
     v_set(v, 0, len);
     v->len = len;
+}
+
+void vec_from(Vec *v, void *arr, unsigned int len, unsigned int size)
+{
+    vec_new_with(v, len, size);
+    vec_push_n(v, arr, len);
 }
 
 void vec_resize(Vec *v, unsigned int min) 
