@@ -1,5 +1,11 @@
 #include "vector.h"
 
+/* ================== BEHAVIOR ================== */
+
+#define GROWTH_FACTOR   (2UL)
+
+/* ================== DEBUG ================== */
+
 #if __DBG__
 #define __VEC_DEBUG_MODE 1
 #else
@@ -23,12 +29,7 @@ if (__VEC_DEBUG_MODE) {                                         \
     vec_dbg(v);                                                 \
 }    
 
-#define GROWTH_FACTOR   (2UL)
-
-//#define v_set(v, n)         memset((v)->ptr, 0, (n) * (v)->size)                /* memset */
-//#define v_cpy(v, e)         memcpy((v)->ptr, (e), (v)->size)                    /* memcpy */
-//#define v_alloc(v, n)       (v)->ptr = malloc((n) * (v)->size)             /* malloc */
-//#define v_realloc(v, n)     (v)->ptr = realloc((v)->ptr, (n) * (v)->size)  /* realloc */
+/* ================== METHODS ================== */
 
 static char *v_at(Vec *v, unsigned int index)
 {
@@ -72,7 +73,6 @@ static void vec_set_capacity(Vec *v, unsigned int cap)
         v_alloc(v, cap);
     else
         v_realloc(v, cap);
-
     v->cap = cap;
     __DBG_PRINT_AFTER(v);
 }
@@ -220,6 +220,38 @@ unsigned int vec_len(Vec *v)
     return v->len;
 }
 
+void *vec_as_ptr(Vec *v)
+{
+    return (void *)v->ptr;
+}
+
+void vec_sort(Vec *v, int order)
+{
+    int i, j;
+    char val[32];
+    void *pval;
+    bool alloc;
+
+    if (v->size < sizeof(val)) {
+        pval = val;
+        alloc = NO;
+    }
+    else {
+        pval = malloc(v->size);
+        alloc = YES;
+    }
+
+    for (i = 0; i < v->len; i++) {
+        for (j = i + 1; j < v->len; j++) {
+            if (memcmp(v_at(v, i), v_at(v, j), v->size) * order > 0) {
+                memcpy(pval      , v_at(v, i), v->size);
+                memcpy(v_at(v, i), v_at(v, j), v->size);
+                memcpy(v_at(v, j), pval      , v->size);
+            }
+        }
+    }
+}
+
 bool vec_iter(Vec *v, void *elem) 
 {
     static unsigned int i = 0;
@@ -236,7 +268,7 @@ bool vec_iter(Vec *v, void *elem)
     return NO;
 }
 
-void vec_print(Vec *v, PFN_TO_STRING pfn_to_string)
+void vec_print(Vec *v, PFN_TO_STRING pfn_to_string, char *separator)
 {
     void *pval;
     char val[32];
@@ -257,7 +289,7 @@ void vec_print(Vec *v, PFN_TO_STRING pfn_to_string)
 
     vec_iter_reset();
     while (vec_iter(v, pval))
-        printf("%s ", pfn_to_string ? pfn_to_string(pval, buf) : *((char **)pval));
+        printf("%s%s", pfn_to_string ? pfn_to_string(pval, buf) : *((char **)pval), separator ? separator : " ");
     printf("\n");
     
     if (alloc)

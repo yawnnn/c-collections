@@ -16,7 +16,7 @@ int main()
 
     int arr[] = {9,8,7,6};
     int elem;
-    printf("TESTING VECTOR OF INTEGERS...\n");
+    printf("\nTESTING VECTOR OF INTEGERS...\n");
 
     vec_new(&v, sizeof(elem));
 
@@ -28,44 +28,54 @@ int main()
     vec_push(&v, &elem);
 
     vec_dbg(&v);
-    vec_print(&v, print_itos);
+    vec_sort(&v, VEC_SORT_ASC);
+    vec_print(&v, print_itos, NULL);
+    vec_sort(&v, VEC_SORT_DESC);
+    vec_print(&v, print_itos, NULL);
 
     vec_drop(&v);
 
     vec_from(&v, arr, sizeof(arr)/sizeof(int), sizeof(int));
-    vec_print(&v, print_itos);
+    vec_print(&v, print_itos, NULL);
 
     vec_drop(&v);
 
-    // VStr s;
-    // char s1[] = "First string";
-    // char s2[] = "Second string";
-    // char s3[] = "Thrist and final string";
+    VStr s;
+    char s1[] = "First string";
+    char s2[] = "Second string";
+    char s3[] = "Third and final string";
 
-    // printf("TESTING VSTR...\n");
+    printf("\nTESTING VSTR...\n");
 
-    // vstr_new(&s);
-    // vstr_cpy(&s, s1);
-    // printf("%s", s);
+    vstr_new(&s);
+    vstr_cpy(&s, s1);
+    vstr_ncpy(&s, s2, 2);
+    vstr_cat(&s, "__AND__");
+    vstr_ncat(&s, s3, 2);
 
-    // vec_new(&v, sizeof(Vec));
+    vstr_dbg(&s);
+    vstr_drop(&s);
 
-    // vstr_from(&s, s1);
-    // vec_push_n(&s, s1, sizeof(s1));
-    // vec_push(&v, &s);
+    printf("\nTESTING TYPE COERCION (SORT OF)...\n");
 
-    // vec_new_with(&s, sizeof(s2), sizeof(char));
-    // vec_push_n(&s, s2, sizeof(s2));
-    // vec_push(&v, &s);
+    vec_new(&v, sizeof(char *));
 
-    // vec_new_with(&s, sizeof(s3), sizeof(char));
-    // vec_push_n(&s, s3, sizeof(s3));
-    // vec_push(&v, &s);
+    vstr_from(&s, s1);
+    vstr_cpy(&s, s2);
+    vec_push(&v, &s);
 
-    // vec_print(&v, NULL);
+    vstr_init(&s, sizeof(s2));
+    vstr_ncpy(&s, s2, sizeof(s2) -2);
+    vec_push(&v, &s);
 
-    // vec_iter_reset();
-    // while (vec_iter(&v, &s))
-    //     vec_drop(&s);
-    // vec_drop(&v);
+    vstr_from(&s, s2);
+    vstr_ncat(&s, s3, sizeof(s3) - 4);
+    vec_push(&v, &s);
+
+    vec_print(&v, NULL, " -- ");
+
+    vec_iter_reset();
+    while (vec_iter(&v, &s))
+        free(*((char **)&s));
+    vec_drop(&v);
 }

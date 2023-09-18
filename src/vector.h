@@ -10,6 +10,10 @@ typedef struct vec {
     unsigned int size;
 } Vec;
 
+
+#define VEC_SORT_ASC     1  
+#define VEC_SORT_DESC   -1
+
 typedef char*(*PFN_TO_STRING)(void *, char *);
 
 void vec_new(Vec *v, unsigned int size);
@@ -28,8 +32,10 @@ void vec_remove(Vec *v, unsigned int index);
 void vec_pop_r(Vec *v, void *elem);
 void vec_get_r(Vec *v, void *elem, unsigned int index);
 unsigned int vec_len(Vec *v);
+void *vec_as_ptr(Vec *v);
+void vec_sort(Vec *v, int order);
 bool vec_iter(Vec *v, void *elem);
-void vec_print(Vec *v, PFN_TO_STRING to_string);
+void vec_print(Vec *v, PFN_TO_STRING to_string, char *separator);
 void vec_dbg(Vec *v);
 
 #define vec_iter_reset()        vec_iter(NULL, NULL)
