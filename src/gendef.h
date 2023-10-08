@@ -10,6 +10,8 @@ typedef enum e_bool {
     YES,
 } bool;
 
+typedef unsigned int uint;
+
 #define NULL ((void *)0)
 
 #define CRED     "\x1b[31m"
