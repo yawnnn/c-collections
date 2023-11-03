@@ -1,10 +1,10 @@
 #include "vector.h"
 
-/* ================== BEHAVIOR ================== */
-
 #define GROWTH_FACTOR   (2UL)
 
-/* ================== DEBUG ================== */
+/* ======================================================================================== */
+/*                                           DEBUG                                          */
+/* ======================================================================================== */
 
 #if __DBG__
 #define __VEC_DEBUG_MODE 1
@@ -34,84 +34,82 @@ if (__VEC_DEBUG_MODE) {                                         \
     vec_dbg(v);                                                 \
 }    
 
-/* ================== METHODS ================== */
+/* ======================================================================================== */
+/*                                     PRIVATE METHODS                                      */
+/* ======================================================================================== */
 
-/* --------------------------------------------------------- */
-/* Internals to abstract the use of v->size */
-/* --------------------------------------------------------- */
-
-static char *v_at(Vec *v, uint pos)
+inline static char *v_at(Vec *v, uint pos)
 {
     return v->ptr + (pos * v->size);
 }
 
-static void v_set(Vec *v, uint pos, uint n)
+inline static void v_set(Vec *v, uint pos, uint n)
 {
     memset(v_at(v, pos), 0, n * v->size);
 }
 
-static void v_cpy(Vec *v, uint pos, void *source, uint n)
+inline static void v_cpy(Vec *v, uint pos, void *source, uint n)
 {
     memcpy(v_at(v, pos), source, n * v->size);
 }
 
-static void v_cpy_to(void *dest, Vec *v, uint pos, uint n)
+inline static void v_cpy_to(void *dest, Vec *v, uint pos, uint n)
 {
     memcpy(dest, v_at(v, pos), n * v->size);
 }
 
-static void v_move(Vec *v, uint pos, void *source, uint n)
+inline static void v_move(Vec *v, uint pos, void *source, uint n)
 {
     memmove(v_at(v, pos), source, n * v->size);
 }
 
-static int v_cmp(Vec *v, uint pos, void *ptr2, uint n)
+inline static int v_cmp(Vec *v, uint pos, void *ptr2, uint n)
 {
     return memcmp(v_at(v, pos), ptr2, n * v->size);
 }
 
-static void v_alloc(Vec *v, uint n)
+inline static void v_alloc(Vec *v, uint n)
 {
     v->ptr = malloc(n * v->size);
+    v->cap = n;
 }
 
-static void v_realloc(Vec *v, uint n)
+inline static void v_realloc(Vec *v, uint n)
 {
     v->ptr = realloc(v->ptr, n * v->size);
+    v->cap = n;
 }
 
-/* --------------------------------------------------------- */
-/* Private function                                          */
-/* --------------------------------------------------------- */
-
 /* Increase capacity by GROWTH_FACTOR */
-static void vec_grow(Vec *v) 
+static void v_grow(Vec *v) 
 {
     __DBG_PRINT_BEFORE(v);
-    if (v->cap == 0) {
+    if (v->cap == 0)
         v_alloc(v, 1);
-        v->cap = 1;
-    } else {
+    else
         v_realloc(v, v->cap * GROWTH_FACTOR);
-        v->cap *= GROWTH_FACTOR;
+    __DBG_PRINT_AFTER(v);
+}
+
+/* Grow where possible, otherwise realloc */
+static void v_resize(Vec *v, uint n) 
+{
+    __DBG_PRINT_BEFORE(v);
+    if (v->cap) {
+        if (n < v->cap || n > v->cap * GROWTH_FACTOR)
+            v_realloc(v, n);
+        else if (n > v->cap)
+            v_grow(v);
+    }
+    else {
+        v_alloc(v, n);
     }
     __DBG_PRINT_AFTER(v);
 }
 
-/* Grow if possible, otherwise realloc */
-static void vec_resize(Vec *v, uint n) 
-{
-    __DBG_PRINT_BEFORE(v);
-    if (n < v->cap || n > v->cap * GROWTH_FACTOR)
-        v_realloc(v, n);
-    else if (n > v->cap)
-        vec_grow(v);
-    __DBG_PRINT_AFTER(v);
-}
-
-/* --------------------------------------------------------- */
-/* Public function                                          */
-/* --------------------------------------------------------- */
+/* ======================================================================================== */
+/*                                      PUBLIC METHODS                                      */
+/* ======================================================================================== */
 
 /* Sets the variables for vector with elements of <size>. The vector is still NULL */
 void vec_new(Vec *v, uint size) 
@@ -159,43 +157,39 @@ void vec_clear(Vec *v)
 void vec_reserve(Vec *v, uint n)
 {
     if (n > v->cap)
-        vec_resize(v, n);
+        v_resize(v, n);
 }
 
 /* Ensures the memory allocated is exactly as needed for the length */
 void vec_shrink_to_fit(Vec *v)
 {
-    if (v->len < v->cap) {
-        v_realloc(v, v->len);
-        v->cap = v->len;
-    }
+    if (v->cap)
+        v_resize(v, v->len);
 }
 
 /* Returns the underlying pointer. 
  * If changes to the vector are made, this pointer can become invalid */
 void *vec_data(Vec *v)
 {
-    return (void *)v->ptr;
+    if (v->len)
+        return (void *)v->ptr;
+    return NULL;
 }
 
 /* Pointer to element at <pos>. 
  * If changes to the vector are made, this pointer can become invalid */
 void *vec_at(Vec *v, uint pos)
 {
-    if (pos <= v->len)
+    if (pos < v->len)
         return v_at(v, pos);
-    else
-        return NULL;
+    return NULL;
 }
 
 /* Insert <elem> at the end of the vector */
 void vec_push(Vec *v, void *elem) 
 {
     __DBG_PRINT_BEFORE(v);
-    if (v->len + 1 > v->cap)
-        vec_grow(v);
-
-    v_cpy(v, v->len++, elem, 1);
+    vec_insert(v, elem, v->len);
     __DBG_PRINT_AFTER(v);
 }
 
@@ -204,8 +198,7 @@ void vec_insert(Vec *v, void *elem, uint pos)
 {
     __DBG_PRINT_BEFORE(v);
     if (pos <= v->len) {
-        if (v->len + 1 > v->cap)
-            vec_grow(v);
+        vec_reserve(v, v->len + 1);
         v_move(v, pos + 1, v_at(v, pos), v->len - pos);
         v_cpy(v, pos, elem, 1);
         v->len++;
@@ -218,8 +211,7 @@ void vec_insert_n(Vec *v, void *elems, uint pos, uint n)
 {
     __DBG_PRINT_BEFORE(v);
     if (pos <= v->len) {
-        if (v->len + n > v->cap)
-            vec_resize(v, v->len + n);
+        vec_reserve(v, v->len + n);
         v_move(v, pos + n, v_at(v, pos), v->len - pos);
         v_cpy(v, pos, elems, n);
         v->len += n;
@@ -231,10 +223,14 @@ void vec_insert_n(Vec *v, void *elems, uint pos, uint n)
  * If <elem> != NULL the element is copied to it, so that memory it owns can be freed */
 void vec_pop(Vec *v, void *elem) 
 {
-    if (v->len != 0) {
+    if (v->len) {
         if (elem)
             v_cpy_to(elem, v, v->len - 1, 1);
         v->len--;
+
+        // Should i shrink?
+        //if (v->len <= (v->cap / GROWTH_FACTOR))
+        //    vec_shrink_to_fit(v);
     }
 }
 
@@ -267,7 +263,7 @@ void vec_set(Vec *v, void *elem, uint pos)
         v_cpy(v, pos, elem, 1);
 }
 
-/* Length of vector, the actual accessible elements */
+/* Length of vector, number of accessible elements */
 uint vec_len(Vec *v) 
 {
     return v->len;
