@@ -13,8 +13,6 @@ typedef struct vec {
 #define VEC_SORT_ASC     1  
 #define VEC_SORT_DESC   -1
 
-typedef char*(*PFN_TO_STRING)(void *, char *);
-
 void vec_new(Vec *v, uint size);
 void vec_new_with(Vec *v, uint cap, uint size);
 void vec_new_from(Vec *v, void *arr, uint n, uint size);
@@ -40,11 +38,10 @@ bool vec_empty(Vec *v);
 void vec_swap(Vec *v, uint pos1, uint pos2, void *tmp);
 void vec_sort(Vec *v, int order);
 bool vec_iter(Vec *v, void *elem);
-void vec_print(Vec *v, PFN_TO_STRING to_string, char *separator);
 
-#define vec_first(v)        (0)                 /* index of first element of vector */
-#define vec_last(v)         (vec_len(v) - 1)    /* index of last element of vector */
-#define vec_end(v)          (vec_len(v))        /* end of the vector, not a valid position to access */
+#define vec_first(v)        (0)                     /* index of first element of vector */
+#define vec_last(v)         (vec_len(v) - 1)        /* index of last element of vector */
+#define vec_end(v)          (vec_len(v))            /* end of the vector, not a valid position to access */
 #define vec_iter_reset()    vec_iter(NULL, NULL)
 
 #endif  /* __VECTOR_H__ */

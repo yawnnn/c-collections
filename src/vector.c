@@ -140,7 +140,7 @@ void vec_init(Vec *v, uint n, uint size)
 void vec_new_from(Vec *v, void *arr, uint n, uint size)
 {
     vec_new_with(v, n, size);
-    vec_push_n(v, arr, n);
+    vec_insert_n(v, arr, 0, n);
 }
 
 /* Clear variables, free memory for the array. 
@@ -341,7 +341,7 @@ bool vec_iter(Vec *v, void *elem)
 
     if (v) {
         if (i < v->len) {
-            vec_get(v, elem, i++);
+            vec_get(v, i++, elem);
             return YES;
         }
     } else {
@@ -349,38 +349,4 @@ bool vec_iter(Vec *v, void *elem)
     }
 
     return NO;
-}
-
-/* Print contents of the vector, separated by <separator>
- * <pfn_to_string> is not necessary, 
- * if the elements or their first (sizeof void*) bytes are c-style strings
-/* TODO --- Can pfn_to_string have better logistics? */
-void vec_print(Vec *v, PFN_TO_STRING pfn_to_string, char *separator)
-{
-    void *pval;
-    char val[32];
-    char *buf = NULL;
-    bool alloc;
-
-    if (v->len == 0)
-        return;
-
-    if (v->size > sizeof(val)) {
-        pval = malloc(v->size);
-        alloc = YES;
-    }
-    else {
-        pval = val;
-        alloc = NO;
-    }
-
-    vec_iter_reset();
-    while (vec_iter(v, pval))
-        printf("%s%s", pfn_to_string ? pfn_to_string(pval, &buf) : *((char **)pval), separator ? separator : " ");
-    printf("\n");
-    
-    if (alloc)
-        free(pval);
-    if (pfn_to_string)
-        free(buf);
 }

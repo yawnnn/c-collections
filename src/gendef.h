@@ -12,7 +12,9 @@ typedef enum e_bool {
 
 typedef unsigned int uint;
 
+#ifndef NULL
 #define NULL ((void *)0)
+#endif
 
 #define CRED     "\x1b[31m"
 #define CGREEN   "\x1b[32m"
