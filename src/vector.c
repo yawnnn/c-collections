@@ -220,7 +220,8 @@ void vec_insert_n(Vec *v, void *elems, uint pos, uint n)
 }
 
 /* Remove element from the end of the array
- * If <elem> != NULL the element is copied to it, so that memory it owns can be freed */
+ * If <elem> != NULL the element is copied to it, so that memory it owns can be freed by the caller */
+/* TODO --- Should i shrink ? */
 void vec_pop(Vec *v, void *elem) 
 {
     if (v->len) {
@@ -228,14 +229,13 @@ void vec_pop(Vec *v, void *elem)
             v_cpy_to(elem, v, v->len - 1, 1);
         v->len--;
 
-        // Should i shrink?
         //if (v->len <= (v->cap / GROWTH_FACTOR))
         //    vec_shrink_to_fit(v);
     }
 }
 
 /* Remove the element at <pos>. 
- * If <elem> != NULL the element is copied to it, so that memory it owns can be freed */
+ * If <elem> != NULL the element is copied to it, so that memory it owns can be freed by the caller */
 void vec_remove(Vec *v, uint pos, void *elem) 
 {
     __DBG_PRINT_BEFORE(v);
@@ -249,14 +249,14 @@ void vec_remove(Vec *v, uint pos, void *elem)
     __DBG_PRINT_AFTER(v);
 }
 
-/* memcpy of element at <pos> to <elem> */
+/* Return element at <pos> in <elem> */
 void vec_get(Vec *v, uint pos, void *elem)
 {
     if (pos < v->len)
         v_cpy_to(elem, v, pos, 1);
 }
 
-/* memcpy of <elem> to element at <pos> */
+/* Set element at <pos> equal to <elem> */
 void vec_set(Vec *v, void *elem, uint pos) 
 {
     if (pos < v->len)
@@ -294,7 +294,7 @@ bool vec_empty(Vec *v)
 }
 
 /* Swap elements at pos <pos1> and <pos2>
- * For simplicity, a pointer to a struct element <tmp> is required */
+ * For simplicity, a pointer to a element <tmp> is required */
 void vec_swap(Vec *v, uint pos1, uint pos2, void *tmp)
 {
     v_cpy_to(tmp, v, pos1, 1);
@@ -302,12 +302,12 @@ void vec_swap(Vec *v, uint pos1, uint pos2, void *tmp)
     v_cpy(v, pos2, tmp, 1);
 }
 
-/* Sort in <order> VEC_SORT_ASC or VEC_SORT_DESC */
+/* Sort in <order> [VEC_SORT_ASC|VEC_SORT_DESC] */
 /* TODO --- Better algorithm */
 void vec_sort(Vec *v, int order)
 {
     int i, j;
-    char val[32];
+    char val[256];
     void *pval;
     bool alloc;
 
@@ -332,9 +332,8 @@ void vec_sort(Vec *v, int order)
 }
 
 /* Iterate over elements of array.
- * Always call first with (NULL, NULL), to reset the interal counter
- * Returns wether there was another element 
- * Elements are read in <elem> */
+ * Call first with (NULL, NULL) to reset the interal counter
+ * Read element in <elem>, returns NO if it's done */
 bool vec_iter(Vec *v, void *elem) 
 {
     static uint i = 0;
