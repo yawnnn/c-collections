@@ -5,12 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum e_bool {
+typedef enum {
     NO = 0,
     YES,
 } bool;
-
-typedef unsigned int uint;
 
 #ifndef NULL
 #define NULL ((void *)0)

@@ -5,37 +5,37 @@
 
 typedef struct vec {
     char *ptr;
-    uint cap;
-    uint len;
-    uint size;
+    size_t cap;
+    size_t len;
+    size_t size;
 } Vec;
 
 #define VEC_SORT_ASC     1  
 #define VEC_SORT_DESC   -1
 
-void vec_new(Vec *v, uint size);
-void vec_new_with(Vec *v, uint cap, uint size);
-void vec_new_from(Vec *v, void *arr, uint n, uint size);
-void vec_init(Vec *v, uint n, uint size);
+void vec_new(Vec *v, size_t size);
+void vec_new_with(Vec *v, size_t cap, size_t size);
+void vec_new_from(Vec *v, void *arr, size_t n, size_t size);
+void vec_init(Vec *v, size_t n, size_t size);
 void vec_clear(Vec *v);
-void vec_reserve(Vec *v, uint n);
+void vec_reserve(Vec *v, size_t n);
 void vec_shrink_to_fit(Vec *v);
 void *vec_data(Vec *v);
-void *vec_at(Vec *v, uint pos);
+void *vec_at(Vec *v, size_t pos);
 void vec_push(Vec *v, void *elem);
-void vec_insert(Vec *v, void *elem, uint pos);
-void vec_insert_n(Vec *v, void *elems, uint pos, uint n);
+void vec_insert(Vec *v, void *elem, size_t pos);
+void vec_insert_n(Vec *v, void *elems, size_t pos, size_t n);
 void vec_merge(Vec *v1, Vec *v2) ;
 void vec_pop(Vec *v, void *elem);
-void vec_remove(Vec *v, uint pos, void *elem);
-void vec_get(Vec *v, uint pos, void *elem);
-void vec_set(Vec *v, void *elem, uint pos);
-uint vec_len(Vec *v);
-uint vec_capacity(Vec *v);
-uint vec_max_size();
-uint vec_sizeof(Vec *v);
+void vec_remove(Vec *v, size_t pos, void *elem);
+void vec_get(Vec *v, size_t pos, void *elem);
+void vec_set(Vec *v, void *elem, size_t pos);
+size_t vec_len(Vec *v);
+size_t vec_capacity(Vec *v);
+size_t vec_max_size();
+size_t vec_sizeof(Vec *v);
 bool vec_empty(Vec *v);
-void vec_swap(Vec *v, uint pos1, uint pos2, void *tmp);
+void vec_swap(Vec *v, size_t pos1, size_t pos2, void *tmp);
 void vec_sort(Vec *v, int order);
 bool vec_iter(Vec *v, void *elem);
 
