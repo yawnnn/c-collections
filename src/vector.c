@@ -122,14 +122,14 @@ void vec_new(Vec *v, size_t size)
 
 /* New vector of elements of <size>, with capacity <cap>
  * the elements are not initialized and length is 0 */
-void vec_new_with(Vec *v, size_t cap, size_t size)
+void vec_new_with(Vec *v, size_t size, size_t cap)
 {
     vec_new(v, size);
     vec_reserve(v, cap);
 }
 
 /* New vector with <n> elements of <size>. everything memset to 0 */
-void vec_init(Vec *v, size_t n, size_t size)
+void vec_init(Vec *v, size_t size, size_t n)
 {
     vec_new_with(v, n, size);
     v_set(v, 0, n);
@@ -137,7 +137,7 @@ void vec_init(Vec *v, size_t n, size_t size)
 }
 
 /* Create vector from a c-style array <arr> with <n> elements of <size> */
-void vec_new_from(Vec *v, void *arr, size_t n, size_t size)
+void vec_new_from(Vec *v, size_t size, void *arr, size_t n)
 {
     vec_new_with(v, n, size);
     vec_insert_n(v, arr, 0, n);

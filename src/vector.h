@@ -14,9 +14,9 @@ typedef struct vec {
 #define VEC_SORT_DESC   -1
 
 void vec_new(Vec *v, size_t size);
-void vec_new_with(Vec *v, size_t cap, size_t size);
-void vec_new_from(Vec *v, void *arr, size_t n, size_t size);
-void vec_init(Vec *v, size_t n, size_t size);
+void vec_new_with(Vec *v, size_t size, size_t cap);
+void vec_new_from(Vec *v, size_t size, void *arr, size_t n);
+void vec_init(Vec *v, size_t size, size_t n);
 void vec_clear(Vec *v);
 void vec_reserve(Vec *v, size_t n);
 void vec_shrink_to_fit(Vec *v);
