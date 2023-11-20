@@ -1,70 +1,47 @@
 #include "vector.h"
 #include "vstr.h"
 
+// void vec_dbg(Vec *v)
+// {
+//     printf("Vec => ptr: " CCYAN "%p" CRESET ", cap: %zu, len: %zu, size: %zu\n", v->ptr, v->cap, v->len, v->size);
+// }
+
+// void dbg(Vec *v)
+// {
+//     int d;
+
+//     vec_dbg(v);
+
+//     for (vec_iter(NULL, NULL); vec_iter(v, &d); )
+//         printf("%i, ", d);
+//     printf("\n");
+// }
+
 int main() 
 {
     // Vec v;
+    // int t[] = { 1, INT_MAX - 1, 34, 45 };
+    // int t2[] = { 55, 66 };
+    // int d = 2;
 
-    // int arr[] = {9,8,7,6};
-    // int elem;
-    // printf("\nTESTING VECTOR OF INTEGERS...\n");
+    // vec_new_from(&v, sizeof(int), t, sizeof(t)/sizeof(int));
+    // vec_pop(&v, NULL);
+    // vec_insert(&v, &d, 0);
+    // vec_insert_n(&v, t2, 3, 2);
+    // dbg(&v);
+    // vec_remove(&v, 2, &d);
+    // dbg(&v);
+    // printf("remove - %i\n", d);
+    // d = 98;
+    // vec_push(&v, &d);
+    // d = 99;
+    // vec_push(&v, &d);
+    // dbg(&v);
 
-    // vec_new(&v, sizeof(elem));
-
-    // elem = 2;
-    // vec_push(&v, &elem);
-    // elem = 4;
-    // vec_push(&v, &elem);
-    // elem = -1;
-    // vec_push(&v, &elem);
-
-    // vec_dbg(&v);
-    // vec_sort(&v, VEC_SORT_ASC);
-    // vec_sort(&v, VEC_SORT_DESC);
-
-    // vec_drop(&v);
-
-    // vec_from(&v, arr, sizeof(arr)/sizeof(int), sizeof(int));
-
-    // vec_drop(&v);
-
-    // VStr s;
-    // char s1[] = "First string";
-    // char s2[] = "Second string";
-    // char s3[] = "Third and final string";
-
-    // printf("\nTESTING VSTR...\n");
-
-    // vstr_new(&s);
-    // vstr_cpy(&s, s1);
-    // vstr_ncpy(&s, s2, 2);
-    // vstr_cat(&s, "__AND__");
-    // vstr_ncat(&s, s3, 2);
-
-    // vstr_drop(&s);
-
-    // printf("\nTESTING TYPE COERCION (SORT OF)...\n");
-
-    // vec_new(&v, sizeof(char *));
-
-    // vstr_from(&s, s1);
-    // vstr_cpy(&s, s2);
-    // vec_push(&v, &s);
-
-    // vstr_init(&s, sizeof(s2));
-    // vstr_ncpy(&s, s2, sizeof(s2) -2);
-    // vec_push(&v, &s);
-
-    // vstr_from(&s, s2);
-    // vstr_ncat(&s, s3, sizeof(s3) - 4);
-    // vec_push(&v, &s);
-
-    // vec_iter_reset();
-    // while (vec_iter(&v, &s))
-    //     free(*((char **)&s));
-    // vec_drop(&v);
-
-    /* TODO --- Write proper tests */
+    // int t3[10];
+    // vec_remove_n(&v, v.len - 4, 2, t3);
+    // dbg(&v);
+    // printf("remove - %i %i\n", t3[0], t3[1]);
 
     return 0;
 }

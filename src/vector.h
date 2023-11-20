@@ -28,6 +28,7 @@ void vec_insert_n(Vec *v, void *elems, size_t pos, size_t n);
 void vec_merge(Vec *v1, Vec *v2) ;
 void vec_pop(Vec *v, void *elem);
 void vec_remove(Vec *v, size_t pos, void *elem);
+void vec_remove_n(Vec *v, size_t pos, size_t n, void *elem);
 void vec_get(Vec *v, size_t pos, void *elem);
 void vec_set(Vec *v, void *elem, size_t pos);
 size_t vec_len(Vec *v);
@@ -39,9 +40,6 @@ void vec_swap(Vec *v, size_t pos1, size_t pos2, void *tmp);
 void vec_sort(Vec *v, int order);
 bool vec_iter(Vec *v, void *elem);
 
-#define vec_first(v)        (0)                     /* index of first element of vector */
-#define vec_last(v)         (vec_len(v) - 1)        /* index of last element of vector */
-#define vec_end(v)          (vec_len(v))            /* end of the vector, not a valid position to access */
 #define vec_iter_reset()    vec_iter(NULL, NULL)
 
 #endif  /* __VECTOR_H__ */

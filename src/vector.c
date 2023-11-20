@@ -17,7 +17,7 @@ static short int __dbg_depth = 0;
 
 static void vec_dbg(Vec *v)
 {
-    printf("Vec => ptr: " CCYAN "%p" CRESET ", cap: %u, len: %u, size: %u\n", v->ptr, v->cap, v->len, v->size);
+    printf("Vec => ptr: " CCYAN "%p" CRESET ", cap: %zu, len: %zu, size: %zu\n", v->ptr, v->cap, v->len, v->size);
 }
 
 #define __DBG_PRINT_BEFORE(v)                                   \
@@ -139,7 +139,7 @@ void vec_init(Vec *v, size_t size, size_t n)
 /* Create vector from a c-style array <arr> with <n> elements of <size> */
 void vec_new_from(Vec *v, size_t size, void *arr, size_t n)
 {
-    vec_new_with(v, n, size);
+    vec_new(v, size);
     vec_insert_n(v, arr, 0, n);
 }
 
@@ -221,16 +221,12 @@ void vec_insert_n(Vec *v, void *elems, size_t pos, size_t n)
 
 /* Remove element from the end of the array
  * If <elem> != NULL the element is copied to it, so that memory it owns can be freed by the caller */
-/* TODO --- Should i shrink ? */
 void vec_pop(Vec *v, void *elem) 
 {
     if (v->len) {
         if (elem)
             v_cpy_to(elem, v, v->len - 1, 1);
         v->len--;
-
-        //if (v->len <= (v->cap / GROWTH_FACTOR))
-        //    vec_shrink_to_fit(v);
     }
 }
 
@@ -245,6 +241,21 @@ void vec_remove(Vec *v, size_t pos, void *elem)
         if (pos + 1 < v->len)
             v_move(v, pos, v_at(v, pos + 1), v->len - (pos + 1));
         vec_pop(v, NULL);
+    }
+    __DBG_PRINT_AFTER(v);
+}
+
+/* Remove the <n> elements starting at <pos>. 
+ * If <elem> != NULL the elements are copied to it, so that memory they own can be freed by the caller */
+void vec_remove_n(Vec *v, size_t pos, size_t n, void *elem)
+{
+    __DBG_PRINT_BEFORE(v);
+    if (pos + n - 1 < v->len) {
+        if (elem)
+            v_cpy_to(elem, v, pos, n);
+        if (pos + n < v->len)
+            v_move(v, pos, v_at(v, pos + n), v->len - (pos + n));
+        v->len -= n;
     }
     __DBG_PRINT_AFTER(v);
 }
