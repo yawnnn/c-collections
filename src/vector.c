@@ -20,14 +20,12 @@ static void vec_dbg(Vec *v)
     printf("Vec => ptr: " CCYAN "%p" CRESET ", cap: %zu, len: %zu, size: %zu\n", v->ptr, v->cap, v->len, v->size);
 }
 
-#define __DBG_PRINT_BEFORE(v)                                   \
 if (__VEC_DEBUG_MODE) {                                         \
     printf("%.*s", __dbg_depth++, max_depth_tabs);              \
     printf(CRED "DBG(" CGREEN "before" CRESET CRED ")" CRESET ": In " CYELLOW "%s" CRESET "(). ", __func__); \
     vec_dbg(v);                                                 \
 }                                                               \
 
-#define __DBG_PRINT_AFTER(v)                                    \
 if (__VEC_DEBUG_MODE) {                                         \
     printf("%.*s", --__dbg_depth, max_depth_tabs);              \
     printf(CRED "DBG(" CMAGENTA "after" CRESET CRED ")" CRESET ": In " CYELLOW "%s" CRESET "(). ", __func__); \
@@ -83,18 +81,15 @@ inline static void v_realloc(Vec *v, size_t n)
 /* Increase capacity by GROWTH_FACTOR */
 static void v_grow(Vec *v) 
 {
-    __DBG_PRINT_BEFORE(v);
     if (v->cap == 0)
         v_alloc(v, GROWTH_FACTOR);
     else
         v_realloc(v, v->cap * GROWTH_FACTOR);
-    __DBG_PRINT_AFTER(v);
 }
 
 /* Grow where possible, otherwise realloc */
 static void v_resize(Vec *v, size_t n) 
 {
-    __DBG_PRINT_BEFORE(v);
     if (v->cap) {
         if (n < v->cap || n > v->cap * GROWTH_FACTOR)
             v_realloc(v, n);
@@ -104,7 +99,6 @@ static void v_resize(Vec *v, size_t n)
     else {
         v_alloc(v, n);
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* ======================================================================================== */
@@ -120,12 +114,12 @@ void vec_new(Vec *v, size_t size)
     v->size = size;
 }
 
-/* New vector of elements of <size>, with capacity <cap>
+/* New vector of elements of <size>, with capacity <n>
  * the elements are not initialized and length is 0 */
-void vec_new_with(Vec *v, size_t size, size_t cap)
+void vec_new_with(Vec *v, size_t size, size_t n)
 {
     vec_new(v, size);
-    vec_reserve(v, cap);
+    vec_reserve(v, n);
 }
 
 /* New vector with <n> elements of <size>. everything memset to 0 */
@@ -188,35 +182,29 @@ void *vec_at(Vec *v, size_t pos)
 /* Insert <elem> at the end of the vector */
 void vec_push(Vec *v, void *elem) 
 {
-    __DBG_PRINT_BEFORE(v);
     vec_insert(v, elem, v->len);
-    __DBG_PRINT_AFTER(v);
 }
 
 /* Insert <elem> at <pos> */
 void vec_insert(Vec *v, void *elem, size_t pos)
 {
-    __DBG_PRINT_BEFORE(v);
     if (pos <= v->len) {
         vec_reserve(v, v->len + 1);
         v_move(v, pos + 1, v_at(v, pos), v->len - pos);
         v_cpy(v, pos, elem, 1);
         v->len++;
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* Insert <n> <elems> starting from <pos> */
-void vec_insert_n(Vec *v, void *elems, size_t pos, size_t n)
+void vec_insert_n(Vec *v, void *elems, size_t n, size_t pos)
 {
-    __DBG_PRINT_BEFORE(v);
     if (pos <= v->len) {
         vec_reserve(v, v->len + n);
         v_move(v, pos + n, v_at(v, pos), v->len - pos);
         v_cpy(v, pos, elems, n);
         v->len += n;
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* Remove element from the end of the array
@@ -234,7 +222,6 @@ void vec_pop(Vec *v, void *elem)
  * If <elem> != NULL the element is copied to it, so that memory it owns can be freed by the caller */
 void vec_remove(Vec *v, size_t pos, void *elem) 
 {
-    __DBG_PRINT_BEFORE(v);
     if (pos < v->len) {
         if (elem)
             v_cpy_to(elem, v, pos, 1);
@@ -242,22 +229,19 @@ void vec_remove(Vec *v, size_t pos, void *elem)
             v_move(v, pos, v_at(v, pos + 1), v->len - (pos + 1));
         vec_pop(v, NULL);
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* Remove the <n> elements starting at <pos>. 
- * If <elem> != NULL the elements are copied to it, so that memory they own can be freed by the caller */
-void vec_remove_n(Vec *v, size_t pos, size_t n, void *elem)
+ * If <elems> != NULL the elements are copied to it, so that memory they own can be freed by the caller */
+void vec_remove_n(Vec *v, size_t pos, size_t n, void *elems)
 {
-    __DBG_PRINT_BEFORE(v);
     if (pos + n - 1 < v->len) {
-        if (elem)
-            v_cpy_to(elem, v, pos, n);
+        if (elems)
+            v_cpy_to(elems, v, pos, n);
         if (pos + n < v->len)
             v_move(v, pos, v_at(v, pos + n), v->len - (pos + n));
         v->len -= n;
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* Return element at <pos> in <elem> */
@@ -280,7 +264,7 @@ size_t vec_len(Vec *v)
     return v->len;
 }
 
-/* Capacity of vector, the memory allocated for it */
+/* Capacity of vector, the number of elements it is allocated for (not bytes) */
 size_t vec_capacity(Vec *v)
 {
     return v->cap;
@@ -313,7 +297,8 @@ void vec_swap(Vec *v, size_t pos1, size_t pos2, void *tmp)
     v_cpy(v, pos2, tmp, 1);
 }
 
-/* Sort in <order> [VEC_SORT_ASC|VEC_SORT_DESC] */
+/* Sort in <order> [VEC_SORT_ASC|VEC_SORT_DESC].
+ * Sorting is done with memcmp, so it only covers simple cases */
 /* TODO --- Better algorithm */
 void vec_sort(Vec *v, int order)
 {
@@ -343,8 +328,8 @@ void vec_sort(Vec *v, int order)
 }
 
 /* Iterate over elements of array.
- * Call first with (NULL, NULL) to reset the interal counter
- * Read element in <elem>, returns NO if it's done */
+ * Call first vec_iter_reset() to reset the interal counter
+ * Read element in <elem>, returns NO if it's done iterating */
 bool vec_iter(Vec *v, void *elem) 
 {
     static size_t i = 0;

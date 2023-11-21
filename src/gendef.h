@@ -1,6 +1,8 @@
 #ifndef __GENDEF_H__
 #define __GENDEF_H__
 
+/* General include. To simplify development and testing */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
