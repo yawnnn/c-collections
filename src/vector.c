@@ -85,7 +85,7 @@ static void v_grow(Vec *v)
 {
     __DBG_PRINT_BEFORE(v);
     if (v->cap == 0)
-        v_alloc(v, 1);
+        v_alloc(v, GROWTH_FACTOR);
     else
         v_realloc(v, v->cap * GROWTH_FACTOR);
     __DBG_PRINT_AFTER(v);
