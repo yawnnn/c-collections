@@ -15,7 +15,7 @@ typedef struct vec {
 
 void vec_new(Vec *v, size_t size);
 void vec_new_with(Vec *v, size_t size, size_t n);
-void vec_new_from(Vec *v, size_t size, void *arr, size_t n);
+void vec_from(Vec *v, size_t size, void *arr, size_t n);
 void vec_init(Vec *v, size_t size, size_t n);
 void vec_clear(Vec *v);
 void vec_reserve(Vec *v, size_t n);
@@ -32,7 +32,7 @@ void vec_get(Vec *v, size_t pos, void *elem);
 void vec_set(Vec *v, void *elem, size_t pos);
 size_t vec_len(Vec *v);
 size_t vec_capacity(Vec *v);
-size_t vec_max_size();
+size_t vec_max_size(Vec *v);
 size_t vec_sizeof(Vec *v);
 bool vec_empty(Vec *v);
 void vec_swap(Vec *v, size_t pos1, size_t pos2, void *tmp);
