@@ -3,7 +3,5 @@
 
 int main() 
 {
-    /* For testing */
-
     return 0;
 }

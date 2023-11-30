@@ -16,9 +16,9 @@
 static const char max_depth_tabs[20] = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 static short int __dbg_depth = 0;
 
-static void vstr_dbg(VStr *s)
+static void vstr_dbg(Vstr *s)
 {
-    printf("VStr => s: %s, cap: %u, len: %u, strlen: %d\n", s->ptr, s->cap, s->len, s->ptr && s->cap ? (int)strlen(s->ptr) : (int)-1);
+    printf("Vstr => s: %s, cap: %zu, len: %zu, strlen: %d\n", s->ptr, s->cap, s->len, s->ptr && s->cap ? (int)strlen(s->ptr) : (int)-1);
 }
 
 #define __DBG_PRINT_BEFORE(s)                                    \
@@ -39,42 +39,30 @@ if (__STR_DEBUG_MODE) {                                          \
 /*                                     PRIVATE METHODS                                      */
 /* ======================================================================================== */
 
-inline static void vs_alloc(VStr *s, size_t n)
+inline static void vs_alloc(Vstr *s, size_t n)
 {
     s->ptr = malloc(n);
     s->cap = n;
 }
 
-inline static void vs_realloc(VStr *s, size_t n)
+inline static void vs_realloc(Vstr *s, size_t n)
 {
     s->ptr = realloc(s->ptr, n);
     s->cap = n;
 }
 
-/* Increase capacity by GROWTH_FACTOR */
-static void vs_grow(VStr *s) 
+/* if shrink, realloc by exact number
+ * if grow  , realloc by GROWTH_FACTOR when possible, otherwise exact number */
+static void vs_resize(Vstr *s, size_t n) 
 {
-    __DBG_PRINT_BEFORE(s);
-    if (s->cap == 0)
-        vs_alloc(s, GROWTH_FACTOR);
-    else
-        vs_realloc(s, s->cap * GROWTH_FACTOR);
-    __DBG_PRINT_AFTER(s);
-}
-
-/* Grow where possible, otherwise realloc */
-static void vs_resize(VStr *s, size_t n) 
-{
-    __DBG_PRINT_BEFORE(s);
     if (s->cap) {
         if (n < s->cap || n > s->cap * GROWTH_FACTOR)
             vs_realloc(s, n);
         else if (n > s->cap)
-            vs_grow(s);
+            vs_realloc(s, s->cap * GROWTH_FACTOR);
     } else {
-        vs_alloc(s, n);
+        vs_alloc(s, n > GROWTH_FACTOR ? n : GROWTH_FACTOR);
     }
-    __DBG_PRINT_AFTER(s);
 }
 
 /* ======================================================================================== */
@@ -83,14 +71,14 @@ static void vs_resize(VStr *s, size_t n)
 
 /* initializes the string, same as initializing with = { 0 }, which is preferable. 
  * the string is empty and NULL */
-void vstr_new(VStr *s) 
+void vstr_new(Vstr *s) 
 {
     s->cap = 0;
     s->len = 0;
 }
 
 /* new string with space for at most a string of length n. the string is empty but not NULL */
-void vstr_init(VStr *s, size_t n)
+void vstr_init(Vstr *s, size_t n)
 {
     vstr_new(s);
     vstr_reserve(s, n);
@@ -98,14 +86,14 @@ void vstr_init(VStr *s, size_t n)
 }
 
 /* new string from c-style string */
-void vstr_from(VStr *s, const char *source)
+void vstr_from(Vstr *s, const char *source)
 {
     vstr_new(s);
     vstr_cpy(s, source);
 }
 
 /* clear variables, release memory */
-void vstr_clear(VStr *s) 
+void vstr_clear(Vstr *s) 
 {
     if (s->cap)
         free(s->ptr);
@@ -114,14 +102,14 @@ void vstr_clear(VStr *s)
 }
 
 /* reserve memory for a string of at least <n> characters */
-void vstr_reserve(VStr *s, size_t n)
+void vstr_reserve(Vstr *s, size_t n)
 {
     if (n + 1 > s->cap)
         vs_resize(s, n + 1);
 }
 
 /* ensure the memory allocated is exactly as needed for the length */
-void vstr_shrink_to_fit(VStr *s)
+void vstr_shrink_to_fit(Vstr *s)
 {
     if (s->cap)
         vs_resize(s, s->len + 1);
@@ -129,98 +117,63 @@ void vstr_shrink_to_fit(VStr *s)
 
 /* strcpy of <source>
  * allocates memory as needed */
-/* TODO --- Without debug mode, i don't need char *ret; */
-char *vstr_cpy(VStr *dest, const char *source) 
+char *vstr_cpy(Vstr *dest, const char *source) 
 {
-    __DBG_PRINT_BEFORE(dest);
-    char *ret;
-
     dest->len = strlen(source);
     vstr_reserve(dest, dest->len);
-    ret = strcpy(dest->ptr, source);
-
-    __DBG_PRINT_AFTER(dest);
-    return ret;
+    return strcpy(dest->ptr, source);
 }
 
 /* strncpy of <source> of at most <n> characters
  * allocates memory as needed */
-char *vstr_ncpy(VStr *dest, const char *source, size_t n) 
+char *vstr_ncpy(Vstr *dest, const char *source, size_t n) 
 {
-    __DBG_PRINT_BEFORE(dest);
-    char *ret;
-
     dest->len = strlen(source);
     if (dest->len > n)
         dest->len = n;
     vstr_reserve(dest, dest->len);
-    ret = strncpy(dest->ptr, source, dest->len);
     dest->ptr[dest->len] = '\0';
-
-    __DBG_PRINT_AFTER(dest);
-    return ret;
+    return strncpy(dest->ptr, source, dest->len);
 }
 
 /* strcat of <source>
  * allocates memory as needed */
-char *vstr_cat(VStr *dest, const char *source) 
+char *vstr_cat(Vstr *dest, const char *source) 
 {
-    __DBG_PRINT_BEFORE(dest);
-    char *ret;
-
     dest->len += strlen(source);
     vstr_reserve(dest, dest->len);
-    ret =  strcat(dest->ptr, source);
-
-    __DBG_PRINT_AFTER(dest);
-    return ret;
+    return strcat(dest->ptr, source);
 }
 
 /* strncat of <source> of at most <n> characters
  * allocates memory as needed */
-char *vstr_ncat(VStr *dest, const char *source, size_t n) 
+char *vstr_ncat(Vstr *dest, const char *source, size_t n) 
 {
-    __DBG_PRINT_BEFORE(dest);
-    char *ret;
     size_t len_src;
     
     len_src = strlen(source);
-    dest->len += len_src > n ? n : len_src;
+    if (len_src < n)
+        n = len_src;
+    dest->len += n;
     vstr_reserve(dest, dest->len);
-    ret = strncat(dest->ptr, source, dest->len);
     dest->ptr[dest->len] = '\0';
-
-    __DBG_PRINT_AFTER(dest);
-    return ret;
+    return strncat(dest->ptr, source, n);
 }
 
-/* merge <s2> into <s1>. releases the memory of <s2> */
-/* TODO --- merge -> join (with <sSeparator>) */
-char *vstr_merge(VStr *s1, VStr *s2) 
+/* merge <s2> into <s1> with c-string <sep> in between. releases the memory of <s2> */
+char *vstr_merge(Vstr *s1, Vstr *s2, const char *sep) 
 {
-    __DBG_PRINT_BEFORE(s1);
-    if (s2->cap)
-        vstr_cpy(s1, s2->ptr);
+    if (s2->len) {
+        s1->len += s2->len + strlen(sep);
+        vstr_reserve(s1, s1->len);
+        strcat(strcat(s1->ptr, sep), s2->ptr);
+    }
     vstr_clear(s2);
-    __DBG_PRINT_AFTER(s1);
     return s1->ptr;
 }
 
-/* strcmp between <s1> and <s2> */
-/* TODO --- check s->cap ? */
-inline int vstr_cmp(VStr *s1, const char *s2)
-{
-    return strcmp(s1->ptr, s2);
-}
-
-/* strncmp between <s1> and <s2> of at most <n> characters */
-inline int vstr_ncmp(VStr *s1, const char *s2, size_t n)
-{
-    return strncmp(s1->ptr, s2, n);
-}
-
-/* return the c-style string */
-inline char *vstr_str(VStr *s)
+/* return the underlying c-style string */
+inline char *vstr_str(Vstr *s)
 {
     if (s->cap)
         return s->ptr;
@@ -228,28 +181,22 @@ inline char *vstr_str(VStr *s)
 }
 
 /* strlen of the string */
-inline size_t vstr_len(VStr *s)
+inline size_t vstr_len(Vstr *s)
 {
     return s->len;
 }
 
 /* amount of memory currently allocated for the string */
-inline size_t vstr_capacity(VStr *s)
+inline size_t vstr_capacity(Vstr *s)
 {
     return s->cap;
-}
-
-/* if the string is empty */
-inline bool vstr_empty(VStr *s)
-{
-    return s->len == 0;
 }
 
 /* iterate over characters of string.
  * call first vstr_iter_reset() to reset the interal counter
  * returns character at every loop, untill it returns '\0' */
 /* TODO --- return char* so he caller can modify ? */
-char vstr_iter(VStr *s) 
+char vstr_iter(Vstr *s) 
 {
     static size_t i = 0;
 

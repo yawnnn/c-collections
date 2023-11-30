@@ -80,31 +80,19 @@ inline static void v_realloc(Vec *v, size_t n)
     v->cap = n;
 }
 
-/* increase capacity by GROWTH_FACTOR */
-static void v_grow(Vec *v) 
-{
-    __DBG_PRINT_BEFORE(v);
-    if (v->cap == 0)
-        v_alloc(v, GROWTH_FACTOR);
-    else
-        v_realloc(v, v->cap * GROWTH_FACTOR);
-    __DBG_PRINT_AFTER(v);
-}
-
-/* grow where possible, otherwise realloc */
+/* if shrink, realloc by exact number
+ * if grow  , realloc by GROWTH_FACTOR when possible, otherwise exact number */
 static void v_resize(Vec *v, size_t n) 
 {
-    __DBG_PRINT_BEFORE(v);
     if (v->cap) {
         if (n < v->cap || n > v->cap * GROWTH_FACTOR)
             v_realloc(v, n);
         else if (n > v->cap)
-            v_grow(v);
+            v_realloc(v, v->cap * GROWTH_FACTOR);
     }
     else {
-        v_alloc(v, n);
+        v_alloc(v, n > GROWTH_FACTOR ? n : GROWTH_FACTOR);
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* ======================================================================================== */
@@ -169,35 +157,24 @@ void vec_shrink_to_fit(Vec *v)
 /* insert <elem> at the end of the vector */
 void vec_push(Vec *v, void *elem) 
 {
-    __DBG_PRINT_BEFORE(v);
     vec_insert(v, elem, v->len);
-    __DBG_PRINT_AFTER(v);
 }
 
 /* insert <elem> at <pos> */
 void vec_insert(Vec *v, void *elem, size_t pos)
 {
-    __DBG_PRINT_BEFORE(v);
-    if (pos <= v->len) {
-        vec_reserve(v, v->len + 1);
-        v_move(v, pos + 1, v_at(v, pos), v->len - pos);
-        v_cpy(v, pos, elem, 1);
-        v->len++;
-    }
-    __DBG_PRINT_AFTER(v);
+    vec_insert_n(v, elem, 1, pos);
 }
 
 /* insert <n> <elems> starting from <pos> */
 void vec_insert_n(Vec *v, void *elems, size_t n, size_t pos)
 {
-    __DBG_PRINT_BEFORE(v);
     if (pos <= v->len) {
         vec_reserve(v, v->len + n);
         v_move(v, pos + n, v_at(v, pos), v->len - pos);
         v_cpy(v, pos, elems, n);
         v->len += n;
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* remove element from the end of the array
@@ -215,22 +192,13 @@ void vec_pop(Vec *v, void *elem)
  * if <elem> != NULL the element is copied to it, so that memory it owns can be freed by the caller */
 void vec_remove(Vec *v, size_t pos, void *elem) 
 {
-    __DBG_PRINT_BEFORE(v);
-    if (pos < v->len) {
-        if (elem)
-            v_cpy_to(elem, v, pos, 1);
-        if (pos + 1 < v->len)
-            v_move(v, pos, v_at(v, pos + 1), v->len - (pos + 1));
-        vec_pop(v, NULL);
-    }
-    __DBG_PRINT_AFTER(v);
+    vec_remove_n(v, pos, elem, 1);
 }
 
 /* remove the <n> elements starting at <pos>. 
  * if <elems> != NULL the elements are copied to it, so that memory they own can be freed by the caller */
 void vec_remove_n(Vec *v, size_t pos, size_t n, void *elems)
 {
-    __DBG_PRINT_BEFORE(v);
     if (pos + n - 1 < v->len) {
         if (elems)
             v_cpy_to(elems, v, pos, n);
@@ -238,7 +206,6 @@ void vec_remove_n(Vec *v, size_t pos, size_t n, void *elems)
             v_move(v, pos, v_at(v, pos + n), v->len - (pos + n));
         v->len -= n;
     }
-    __DBG_PRINT_AFTER(v);
 }
 
 /* return element at <pos> in <elem> */
@@ -283,24 +250,6 @@ inline size_t vec_len(Vec *v)
 inline size_t vec_capacity(Vec *v)
 {
     return v->cap;
-}
-
-/* the maximum number of elements a vector with this size of element will ever hold */
-inline size_t vec_max_size(Vec *v)
-{
-    return ((size_t)-1) / v->size;
-}
-
-/* the size of the elements cointained in vector */
-inline size_t vec_sizeof(Vec *v)
-{
-    return v->size;
-}
-
-/* if the vector is empty */
-inline bool vec_empty(Vec *v)
-{
-    return v->len == 0;
 }
 
 /* swap elements at pos <pos1> and <pos2>

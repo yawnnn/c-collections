@@ -3,7 +3,7 @@
 
 #include "gendef.h"
 
-typedef struct vec {
+typedef struct {
     char *ptr;
     size_t cap;
     size_t len;
