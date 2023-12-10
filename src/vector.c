@@ -1,38 +1,8 @@
+#include <stdlib.h>
+#include <string.h>
 #include "vector.h"
 
 #define GROWTH_FACTOR   (2UL)
-
-/* ======================================================================================== */
-/*                                           DEBUG                                          */
-/* ======================================================================================== */
-
-#if __DBG__
-#define __VEC_DEBUG_MODE 1
-#else
-#define __VEC_DEBUG_MODE 0
-#endif
-
-static const char max_depth_tabs[20] = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
-static short int __dbg_depth = 0;
-
-static void vec_dbg(Vec *v)
-{
-    printf("Vec => ptr: " CCYAN "%p" CRESET ", cap: %zu, len: %zu, size: %zu\n", v->ptr, v->cap, v->len, v->size);
-}
-
-#define __DBG_PRINT_BEFORE(v)                                   \
-if (__VEC_DEBUG_MODE) {                                         \
-    printf("%.*s", __dbg_depth++, max_depth_tabs);              \
-    printf(CRED "DBG(" CGREEN "before" CRESET CRED ")" CRESET ": In " CYELLOW "%s" CRESET "(). ", __func__); \
-    vec_dbg(v);                                                 \
-}                                                               \
-
-#define __DBG_PRINT_AFTER(v)                                    \
-if (__VEC_DEBUG_MODE) {                                         \
-    printf("%.*s", --__dbg_depth, max_depth_tabs);              \
-    printf(CRED "DBG(" CMAGENTA "after" CRESET CRED ")" CRESET ": In " CYELLOW "%s" CRESET "(). ", __func__); \
-    vec_dbg(v);                                                 \
-}    
 
 /* ======================================================================================== */
 /*                                     PRIVATE METHODS                                      */
@@ -197,7 +167,7 @@ void vec_remove(Vec *v, size_t pos, void *elem)
 
 /* remove the <n> elements starting at <pos>. 
  * if <elems> != NULL the elements are copied to it, so that memory they own can be freed by the caller */
-void vec_remove_n(Vec *v, size_t pos, size_t n, void *elems)
+void vec_remove_n(Vec *v, size_t pos, void *elems, size_t n)
 {
     if (pos + n - 1 < v->len) {
         if (elems)

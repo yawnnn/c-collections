@@ -1,7 +1,7 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
-#include "gendef.h"
+#include "gendef.h"     // To be removed. Read the file
 
 typedef struct {
     char *ptr;
@@ -27,7 +27,7 @@ void vec_insert(Vec *v, void *elem, size_t pos);
 void vec_insert_n(Vec *v, void *elems, size_t n, size_t pos);
 void vec_pop(Vec *v, void *elem);
 void vec_remove(Vec *v, size_t pos, void *elem);
-void vec_remove_n(Vec *v, size_t pos, size_t n, void *elems);
+void vec_remove_n(Vec *v, size_t pos, void *elems, size_t n);
 void vec_get(Vec *v, size_t pos, void *elem);
 void vec_set(Vec *v, void *elem, size_t pos);
 size_t vec_len(Vec *v);

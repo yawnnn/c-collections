@@ -1,7 +1,7 @@
 #ifndef __VSTR_H__
 #define __VSTR_H__
 
-#include "gendef.h"
+#include "gendef.h"     // To be removed. Read the file
 
 typedef struct {
     char *ptr;
@@ -23,7 +23,7 @@ char *vstr_merge(Vstr *s1, Vstr *s2, const char *sep);
 char *vstr_str(Vstr *s);
 size_t vstr_len(Vstr *s);
 size_t vstr_capacity(Vstr *s);
-char vstr_iter(Vstr *s);
+char *vstr_iter(Vstr *s);
 
 #define vstr_iter_reset()   vstr_iter(NULL, NULL)
 

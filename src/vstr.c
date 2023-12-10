@@ -1,39 +1,8 @@
-#include "gendef.h"
+#include <stdlib.h>
+#include <string.h>
 #include "vstr.h"
 
-/* ================== BEHAVIOR ================== */
-
 #define GROWTH_FACTOR   (2UL)
-
-/* ================== DEBUG ================== */
-
-#if __DBG__
-#define __STR_DEBUG_MODE 1
-#else
-#define __STR_DEBUG_MODE 0
-#endif
-
-static const char max_depth_tabs[20] = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
-static short int __dbg_depth = 0;
-
-static void vstr_dbg(Vstr *s)
-{
-    printf("Vstr => s: %s, cap: %zu, len: %zu, strlen: %d\n", s->ptr, s->cap, s->len, s->ptr && s->cap ? (int)strlen(s->ptr) : (int)-1);
-}
-
-#define __DBG_PRINT_BEFORE(s)                                    \
-if (__STR_DEBUG_MODE) {                                          \
-    printf("%.*s", __dbg_depth++, max_depth_tabs);               \
-    printf(CRED "DBG(" CGREEN "before" CRESET CRED ")" CRESET ": In " CYELLOW "%s" CRESET "(). ", __func__); \
-    vstr_dbg(s);                                                 \
-}                                                                \
-
-#define __DBG_PRINT_AFTER(s)                                     \
-if (__STR_DEBUG_MODE) {                                          \
-    printf("%.*s", --__dbg_depth, max_depth_tabs);               \
-    printf(CRED "DBG(" CMAGENTA "after" CRESET CRED ")" CRESET ": In " CYELLOW "%s" CRESET "(). ", __func__); \
-    vstr_dbg(s);                                                 \
-}    
 
 /* ======================================================================================== */
 /*                                     PRIVATE METHODS                                      */
@@ -194,18 +163,17 @@ inline size_t vstr_capacity(Vstr *s)
 
 /* iterate over characters of string.
  * call first vstr_iter_reset() to reset the interal counter
- * returns character at every loop, untill it returns '\0' */
-/* TODO --- return char* so he caller can modify ? */
-char vstr_iter(Vstr *s) 
+ * at every iteration return the address of current value, or NULL when it's done */
+char *vstr_iter(Vstr *s) 
 {
     static size_t i = 0;
 
     if (s) {
         if (i < s->len)
-            return s->ptr[i++];
+            return &s->ptr[i++];
     } else {
         i = 0;
     }
 
-    return '\0';
+    return NULL;
 }
