@@ -192,27 +192,14 @@ void vec_set(Vec *v, void *elem, size_t pos)
         v_memcpy(v, pos, elem, 1);
 }
 
-/* returns the underlying pointer. 
- * if changes to the vector are made, this pointer can become invalid */
-inline void *vec_ptr(Vec *v)
-{
-    if (v->len)
-        return (void *)v->ptr;
-    return NULL;
-}
-
 /* pointer to element at <pos>. 
- * if changes to the vector are made, this pointer can become invalid */
-inline void *vec_elem_at(Vec *v, size_t pos)
+ * if changes to the Vec are made, this pointer can become invalid */
+/* TODO --- make inline? i would have to not use v_elem_at() */
+void *vec_elem_at(Vec *v, size_t pos)
 {
     if (pos < v->len)
         return v_elem_at(v, pos);
     return NULL;
-}
-
-inline bool vec_is_empty(Vec *v) 
-{
-    return v->len == 0;
 }
 
 /* swap elements at pos <pos1> and <pos2>

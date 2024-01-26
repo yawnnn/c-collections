@@ -20,8 +20,19 @@ char  *vstr_ncpy(Vstr *dest, const char *source, size_t num);
 char  *vstr_cat(Vstr *dest, const char *source);
 char  *vstr_ncat(Vstr *dest, const char *source, size_t num);
 char  *vstr_merge(Vstr *s1, Vstr *s2, const char *sep);
-char  *vstr_c_str(Vstr *s);
-bool   vstr_is_empty(Vstr *s);
+
+/* return the underlying c-style string */
+inline char *vstr_c_str(Vstr *s)
+{
+    if (s->cap)         // if allocated, it should always be '\0' terminated. hence, this is fine
+        return s->ptr;
+    return (void *)0;
+}
+
+inline bool vstr_is_empty(Vstr *s)
+{
+    return s->len == 0;
+}
 
 #define vstr_iter_reset()   vstr_iter(NULL, NULL)
 

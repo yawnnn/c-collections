@@ -139,16 +139,3 @@ char *vstr_merge(Vstr *s1, Vstr *s2, const char *sep)
     vstr_clear(s2);
     return vstr_c_str(s1);
 }
-
-/* return the underlying c-style string */
-inline char *vstr_c_str(Vstr *s)
-{
-    if (s->cap)         // if allocated, it should always be '\0' terminated. hence, this is fine
-        return s->ptr;
-    return NULL;
-}
-
-inline bool vstr_is_empty(Vstr *s)
-{
-    return s->len == 0;
-}
