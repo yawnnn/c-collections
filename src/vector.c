@@ -206,9 +206,11 @@ void *vec_elem_at(Vec *v, size_t pos)
  * for simplicity, a pointer to a element <tmp> is required */
 void vec_swap(Vec *v, size_t pos1, size_t pos2, void *tmp)
 {
-    v_memcpy_to(tmp, v, pos1, 1);
-    v_memcpy(v, pos1, v_elem_at(v, pos2), 1);
-    v_memcpy(v, pos2, tmp, 1);
+    if (pos1 < v->len && pos2 < v->len) {
+        v_memcpy_to(tmp, v, pos1, 1);
+        v_memcpy(v, pos1, v_elem_at(v, pos2), 1);
+        v_memcpy(v, pos2, tmp, 1);
+    }
 }
 
 /* sort in <order> [VEC_SORT_ASC|VEC_SORT_DESC] */
