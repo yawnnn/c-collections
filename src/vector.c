@@ -127,7 +127,7 @@ void vec_shrink_to_fit(Vec *v)
 /* insert <elem> at the end of the vector */
 void vec_push(Vec *v, void *elem) 
 {
-    vec_insert(v, elem, v->len);
+    vec_insert_n(v, elem, 1, v->len);
 }
 
 /* insert <elem> at <pos> */
@@ -151,11 +151,7 @@ void vec_insert_n(Vec *v, void *elems, size_t nelem, size_t pos)
  * if <elem> != NULL the element is copied to it, so that memory it owns can be freed by the caller */
 void vec_pop(Vec *v, void *elem) 
 {
-    if (v->len) {
-        if (elem)
-            v_memcpy_to(elem, v, v->len - 1, 1);
-        v->len--;
-    }
+    vec_remove_n(v, v->len - 1, 1, elem);
 }
 
 /* remove the element at <pos>. 
