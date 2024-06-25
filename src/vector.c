@@ -86,7 +86,7 @@ void vec_new_with(Vec *v, size_t szof, size_t nelem)
 }
 
 /* new vector with <nelem> elements of <szof>. everything memset to 0 */
-void vec_init(Vec *v, size_t szof, size_t nelem)
+void vec_new_with_zeroed(Vec *v, size_t szof, size_t nelem)
 {
     vec_new_with(v, nelem, szof);
     v_memset(v, 0, nelem);
@@ -209,7 +209,7 @@ void vec_swap(Vec *v, size_t pos1, size_t pos2, void *tmp)
     }
 }
 
-/* sort in <order> [VEC_SORT_ASC|VEC_SORT_DESC] */
+/* sort in <order> (VEC_ORDER[ASC|DESC]) */
 /* TODO --- Better algorithm */
 void vec_sort(Vec *v, int order)
 {
