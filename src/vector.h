@@ -119,7 +119,7 @@ inline void *Vector_data(Vector *v) {
  */
 inline void *Vector_elem_at(Vector *v, size_t pos) {
     if (pos < v->len)
-        return v_elem_at(v, pos);
+        return (void *)(((char *)v->ptr) + (pos * v->szof));
     return NULL;
 }
 
@@ -140,6 +140,16 @@ void Vector_get(Vector *v, size_t pos, void *elem);
  * @param pos index of the element
  */
 void Vector_set(Vector *v, void *elem, size_t pos);
+
+/**
+ * @brief bulk insert of elements starting at pos through shallow-copy
+ *
+ * @param v Vector
+ * @param elems array of elements
+ * @param nelem number of elements of the array
+ * @param pos starting index of the elements
+ */
+void Vector_insert_n(Vector *v, void *elems, size_t nelem, size_t pos);
 
 /**
  * @brief insert element at the end of the vector through shallow-copy
@@ -163,14 +173,16 @@ inline void Vector_insert(Vector *v, void *elem, size_t pos) {
 }
 
 /**
- * @brief bulk insert of elements starting at pos through shallow-copy
+ * @brief bulk remove elements starting at pos, shifting the ones after
  *
+ * if the elements own memory, that needs to be freed through @p elems
+ * 
  * @param v Vector
- * @param elems array of elements
- * @param nelem number of elements of the array
- * @param pos starting index of the elements
+ * @param pos index of the elements
+ * @param elems elements removed, can be NULL
+ * @param nelem number of elements to be removed
  */
-void Vector_insert_n(Vector *v, void *elems, size_t nelem, size_t pos);
+void Vector_remove_n(Vector *v, size_t pos, void *elems, size_t nelem);
 
 /**
  * @brief remove element from the end of the vector
@@ -196,18 +208,6 @@ inline void Vector_pop(Vector *v, void *elem) {
 inline void Vector_remove(Vector *v, size_t pos, void *elem) {
     Vector_remove_n(v, pos, elem, 1);
 }
-
-/**
- * @brief bulk remove elements starting at pos, shifting the ones after
- *
- * if the elements own memory, that needs to be freed through @p elems
- * 
- * @param v Vector
- * @param pos index of the elements
- * @param elems elements removed, can be NULL
- * @param nelem number of elements to be removed
- */
-void Vector_remove_n(Vector *v, size_t pos, void *elems, size_t nelem);
 
 /**
  * @brief if Vector is empty
