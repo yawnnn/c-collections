@@ -149,18 +149,3 @@ void Vector_swap(Vector *v, size_t pos1, size_t pos2, void *tmp) {
         v_memcpy(v, pos2, tmp, 1);
     }
 }
-
-bool Vector_iter(Vector *v, void *elem) {
-    static size_t i = 0;
-
-    if (v) {
-        if (i < v->len) {
-            Vector_get(v, i++, elem);
-            return true;
-        }
-    } else {
-        i = 0;
-    }
-
-    return false;
-}

@@ -232,22 +232,4 @@ inline bool Vector_is_empty(Vector *v) {
  */
 void Vector_swap(Vector *v, size_t pos1, size_t pos2, void *tmp);
 
-/**
- * @brief iterate over the elements of the vector
- *
- * before starting the iteration, call Vector_iter_reset()
- * then, call in a loop until the return value is false
- * the element of the iteration is shallow-copied in @p elem
- * 
- * @param v Vector
- * @param elem contains the element of this iteration
- * @return true until end of Vector is reached
- */
-bool Vector_iter(Vector *v, void *elem);
-
-/**
- * @brief reset iterator
- */
-#define Vector_iter_reset() Vector_iter(NULL, NULL)
-
 #endif /* __VECTOR_H__ */
