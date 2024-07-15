@@ -175,6 +175,7 @@ inline void Vector_insert(Vector *v, void *elem, size_t pos) {
 /**
  * @brief bulk remove elements starting at pos, shifting the ones after
  *
+ * doesn't deallocate memory
  * if the elements own memory, that needs to be freed through @p elems
  * 
  * @param v Vector
@@ -187,6 +188,7 @@ void Vector_remove_n(Vector *v, size_t pos, void *elems, size_t nelem);
 /**
  * @brief remove element from the end of the vector
  *
+ * doesn't deallocate memory
  * if the element owns memory, that needs to be freed through @p elem
  * 
  * @param v Vector
@@ -199,6 +201,7 @@ inline void Vector_pop(Vector *v, void *elem) {
 /**
  * @brief remove element from pos, shifting the ones after
  *
+ * doesn't deallocate memory
  * if the element owns memory, that needs to be freed through @p elem
  * 
  * @param v Vector
@@ -231,5 +234,53 @@ inline bool Vector_is_empty(Vector *v) {
  * @param tmp pointer to memory big enough to contain an element of the vector
  */
 void Vector_swap(Vector *v, size_t pos1, size_t pos2, void *tmp);
+
+/**
+ * @brief memset for @p v 's elements
+ * 
+ * @param v Vector
+ * @param dst destination
+ * @param val value to set
+ * @param nelem number of @p v 's elements
+ */
+inline void Vector_memset(Vector *v, void *dst, int val, size_t nelem) {
+    memset(dst, val, nelem * v->szof);
+}
+
+/**
+ * @brief memcpy for @p v 's elements
+ * 
+ * @param v Vector
+ * @param dst destination
+ * @param src source
+ * @param nelem number of @p v 's elements
+ */
+inline void Vector_memcpy(Vector *v, void *dst, void *src, size_t nelem) {
+    memcpy(dst, src, nelem * v->szof);
+}
+
+/**
+ * @brief memmove for @p v 's elements
+ * 
+ * @param v Vector
+ * @param dst destination
+ * @param src source
+ * @param nelem number of @p v 's elements
+ */
+inline void Vector_memmove(Vector *v, void *dst, void *src, size_t nelem) {
+    memmove(dst, src, nelem * v->szof);
+}
+
+/**
+ * @brief memcmp for @p v 's elements
+ * 
+ * @param v Vector
+ * @param ptr1 pointer 1
+ * @param ptr2 pointer 2
+ * @param nelem number of @p v 's elements
+ */
+inline int Vector_memcmp(Vector *v, void *ptr1, void *ptr2, size_t nelem) {
+    return memcmp(ptr1, ptr2, nelem * v->szof);
+}
 
 #endif /* __VECTOR_H__ */
