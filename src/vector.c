@@ -77,17 +77,17 @@ void Vector_free(Vector *v) {
 }
 
 void Vector_reserve(Vector *v, size_t nelem) {
-    if (nelem > v->cap) {
-        if (v->len)
-            Vector_resize(v, nelem);
-        else
-            Vector_free(v);
-    }
+    if (nelem > v->cap)
+        Vector_resize(v, nelem);
 }
 
 void Vector_shrink_to_fit(Vector *v) {
-    if (v->cap > v->len)
-        Vector_resize(v, v->len);
+    if (v->cap > v->len) {
+        if (v->len)
+            Vector_resize(v, v->len);
+        else
+            Vector_free(v);
+    }
 }
 
 void Vector_get(Vector *v, size_t pos, void *elem) {
