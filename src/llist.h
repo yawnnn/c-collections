@@ -1,9 +1,9 @@
 /**
- * @file linkedlist.h
+ * @file llist.h
  */
 
-#ifndef __LINKEDLIST_H__
-#define __LINKEDLIST_H__
+#ifndef __LLIST_H__
+#define __LLIST_H__
 
 #include <stdbool.h>
 
@@ -131,4 +131,4 @@ inline bool llist_is_empty(LList *list) {
     return list->head == (void *)0;
 }
 
-#endif /* __LINKEDLIST_H__ */
+#endif /* __LLIST_H__ */

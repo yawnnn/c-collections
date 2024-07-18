@@ -1,9 +1,9 @@
 /**
- * @file sstring.h
+ * @file sstr.h
  */
 
-#ifndef __VSTR_H__
-#define __VSTR_H__
+#ifndef __SSTR_H__
+#define __SSTR_H__
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -163,4 +163,4 @@ inline bool sstr_is_empty(SStr *s) {
     return s->len == 0;
 }
 
-#endif /* __VSTR_H__ */
+#endif /* __SSTR_H__ */

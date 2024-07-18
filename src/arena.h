@@ -1,5 +1,5 @@
-#ifndef __ARENA_ALLOCATOR_H__
-#define __ARENA_ALLOCATOR_H__
+#ifndef __ARENA_H__
+#define __ARENA_H__
 
 typedef struct ArenaNode {
     struct ArenaNode *next;
@@ -9,4 +9,4 @@ typedef struct Arena {
     ArenaNode *head;
 } Arena;
 
-#endif /* __ARENA_ALLOCATOR_H__ */
+#endif /* __ARENA_H__ */

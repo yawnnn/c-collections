@@ -1,12 +1,13 @@
 /**
- * @file vector.h
+ * @file vec.h
  */
 
-#ifndef __VECTOR_H__
-#define __VECTOR_H__
+#ifndef __VEC_H__
+#define __VEC_H__
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * @brief dynamic array
@@ -283,4 +284,4 @@ inline int vec_memcmp(Vec *v, void *ptr1, void *ptr2, size_t nelem) {
     return memcmp(ptr1, ptr2, nelem * v->szof);
 }
 
-#endif /* __VECTOR_H__ */
+#endif /* __VEC_H__ */
