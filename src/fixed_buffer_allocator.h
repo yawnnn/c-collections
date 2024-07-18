@@ -1,10 +1,10 @@
 #ifndef __FIXED_BUFFER_ALLOCATOR_H__
 #define __FIXED_BUFFER_ALLOCATOR_H__
 
-typedef struct FixedBufferAllocator {
+typedef struct FixedBuffer {
     char *start;
     char *end;
     char *head;
-} FixedBufferAllocator;
+} FixedBuffer;
 
 #endif /* __FIXED_BUFFER_ALLOCATOR_H__ */

@@ -1,7 +1,7 @@
+#include "vector.h"
+
 #include <stdlib.h>
 #include <string.h>
-
-#include "vector.h"
 
 #define GROWTH_FACTOR (2UL)
 
@@ -118,8 +118,8 @@ void vec_remove_n(Vec *v, size_t pos, void *elems, size_t nelem) {
 
 void vec_swap(Vec *v, size_t pos1, size_t pos2, void *tmp) {
     if (pos1 < v->len && pos2 < v->len) {
-        vec_memcpy(v, tmp                , vec_ptr(v, pos1), 1);
+        vec_memcpy(v, tmp, vec_ptr(v, pos1), 1);
         vec_memcpy(v, vec_ptr(v, pos1), vec_ptr(v, pos2), 1);
-        vec_memcpy(v, vec_ptr(v, pos2), tmp                , 1);
+        vec_memcpy(v, vec_ptr(v, pos2), tmp, 1);
     }
 }

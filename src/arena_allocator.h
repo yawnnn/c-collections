@@ -5,8 +5,8 @@ typedef struct ArenaNode {
     struct ArenaNode *next;
 } ArenaNode;
 
-typedef struct ArenaAllocator {
+typedef struct Arena {
     ArenaNode *head;
-} ArenaAllocator;
+} Arena;
 
 #endif /* __ARENA_ALLOCATOR_H__ */

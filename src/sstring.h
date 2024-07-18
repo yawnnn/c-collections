@@ -11,52 +11,52 @@
 /**
  * @brief Dynamic string
  */
-typedef struct SString {
-    char *ptr;  /**< underlying c-style string (access through SString_data()) */
+typedef struct SStr {
+    char *ptr;  /**< underlying c-style string (access through sstr_data()) */
     size_t cap; /**< capacity allocated */
-    size_t len; /**< length of the SString */
-} SString;
+    size_t len; /**< length of the SStr */
+} SStr;
 
 /**
- * @brief new SString
+ * @brief new SStr
  *
- * the SString is not allocated, therefore SString_data() returns NULL
+ * the SStr is not allocated, therefore sstr_data() returns NULL
  *
- * @param s SString
+ * @param s SStr
  */
-void SString_new(SString *s);
+void sstr_new(SStr *s);
 
 /**
- * @brief new SString with reserved space
+ * @brief new SStr with reserved space
  *
- * the SString has 0 length but is allocated, therefore SString_data() is valid
+ * the SStr has 0 length but is allocated, therefore sstr_data() is valid
  *
- * @param s SString
+ * @param s SStr
  * @param len minimum number of characters to reserve memory for
  */
-void SString_new_with(SString *s, size_t len);
+void sstr_new_with(SStr *s, size_t len);
 
 /**
- * @brief new SString from c-style string
+ * @brief new SStr from c-style string
  *
- * @param s SString
+ * @param s SStr
  * @param source source c-style string
  */
-void SString_from(SString *s, const char *source);
+void sstr_from(SStr *s, const char *source);
 
 /**
  * @brief release memory
  *
- * @param s SString
+ * @param s SStr
  */
-void SString_free(SString *s);
+void sstr_free(SStr *s);
 
 /**
  * @brief empty the string but don't free the memory, so it can be reused
  *
- * @param s SString
+ * @param s SStr
  */
-inline void SString_truncate(SString *s) {
+inline void sstr_truncate(SStr *s) {
     if (s->len) {
         *s->ptr = '\0';
         s->len = 0;
@@ -66,25 +66,25 @@ inline void SString_truncate(SString *s) {
 /**
  * @brief reserve memory ahead of time
  *
- * @param s SString
+ * @param s SStr
  * @param len minimum number of characters to reserve memory for
  */
-void SString_reserve(SString *s, size_t len);
+void sstr_reserve(SStr *s, size_t len);
 
 /**
  * @brief shrink allocated memory to what is exactly needed for length
  *
- * @param s SString
+ * @param s SStr
  */
-void SString_shrink_to_fit(SString *s);
+void sstr_shrink_to_fit(SStr *s);
 
 /**
  * @brief return the underlying c-style string, or NULL
  *
- * @param s SString
+ * @param s SStr
  * @return c-style string or NULL
  */
-inline char *SString_data(SString *s) {
+inline char *sstr_data(SStr *s) {
     if (s->cap)  // len could be 0, but still allocated because of the null-terminating character
         return s->ptr;
     return NULL;
@@ -93,11 +93,11 @@ inline char *SString_data(SString *s) {
 /**
  * @brief return the underlying c-style string starting at @p pos, or NULL
  *
- * @param s SString
+ * @param s SStr
  * @param pos start position
  * @return c-style string or NULL
  */
-inline char *SString_data_from(SString *s, size_t pos) {
+inline char *sstr_data_from(SStr *s, size_t pos) {
     // asking for the position from the null-terminating char is valid, so i hate to check s->cap too
     if (pos <= s->len && s->cap)
         return s->ptr + pos;
@@ -105,61 +105,61 @@ inline char *SString_data_from(SString *s, size_t pos) {
 }
 
 /**
- * @brief strcpy for SString
+ * @brief strcpy for SStr
  *
- * @param dest SString
+ * @param dest SStr
  * @param source source c-style string
  * @return the underlying c-style string of @p dest
  */
-char *SString_cpy(SString *dest, const char *source);
+char *sstr_cpy(SStr *dest, const char *source);
 
 /**
- * @brief strncpy for SString
+ * @brief strncpy for SStr
  *
- * @param dest SString
+ * @param dest SStr
  * @param source source c-style string
  * @param num max number of characters to copy
  * @return the underlying c-style string of @p dest
  */
-char *SString_ncpy(SString *dest, const char *source, size_t num);
+char *sstr_ncpy(SStr *dest, const char *source, size_t num);
 
 /**
- * @brief strcat for SString
+ * @brief strcat for SStr
  *
- * @param dest SString
+ * @param dest SStr
  * @param source source c-style string
  * @return the underlying c-style string of @p dest
  */
-char *SString_cat(SString *dest, const char *source);
+char *sstr_cat(SStr *dest, const char *source);
 
 /**
- * @brief strncat for SString
+ * @brief strncat for SStr
  *
- * @param dest SString
+ * @param dest SStr
  * @param source source c-style string
  * @param num max number of characters to concat
  * @return the underlying c-style string of @p dest
  */
-char *SString_ncat(SString *dest, const char *source, size_t num);
+char *sstr_ncat(SStr *dest, const char *source, size_t num);
 
 /**
- * @brief merge two SString
+ * @brief merge two SStr
  *
  * merge @p source into @p dest with c-style string @p sep in between. consumes @p source
  *
- * @param dest SString dest
- * @param source SString source
+ * @param dest SStr dest
+ * @param source SStr source
  * @return the underlying c-style string of @p dest
  */
-char *SString_merge(SString *dest, SString *source, const char *sep);
+char *sstr_merge(SStr *dest, SStr *source, const char *sep);
 
 /**
- * @brief if SString is empty
+ * @brief if SStr is empty
  *
- * @param s SString
+ * @param s SStr
  * @return boolean
  */
-inline bool SString_is_empty(SString *s) {
+inline bool sstr_is_empty(SStr *s) {
     return s->len == 0;
 }
 
